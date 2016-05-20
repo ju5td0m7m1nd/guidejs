@@ -1,0 +1,34 @@
+export function smoothScroll(startY, stopY) {
+    var distance = stopY > startY ? stopY - startY : startY - stopY;
+    /*
+    if (distance < 100) {
+        window.scrollTo(0, stopY);
+        return 
+    }
+    */
+    var speed = Math.round(distance / 30);
+    if (speed >= 50) speed = 50;
+    var step = Math.round(distance / 10);
+    var leapY = stopY > startY ? startY + step : startY - step;
+    var timer = 0;
+    if (stopY > startY) {
+        for ( var i=startY; i<stopY; i+=step ) {
+            ( (offset)=>{
+                setTimeout( ()=>window.scrollTo(0, offset) , timer * speed);
+            })(leapY);
+            leapY += step; 
+            if (leapY > stopY) leapY = stopY; 
+            timer++;
+        } 
+    } else {
+        console.log(leapY);
+        for ( var i=startY; i>stopY; i-=step ) {
+            ( (offset)=> {
+                setTimeout( ()=>window.scrollTo(0, offset), timer * speed);
+            })(leapY);
+            leapY -= step; 
+            if (leapY < stopY) leapY = stopY; 
+            timer++;
+        }
+    }
+}
