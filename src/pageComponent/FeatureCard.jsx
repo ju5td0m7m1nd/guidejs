@@ -6,20 +6,25 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const styles = {
-    card: {
-        width: '30%',
-        display: 'flex',
-        justifyContent: 'flex-start',
-    },
-    title: {
-        lineHeight:'300%',
-        fontSize: '18px',
-        fontWeight: 'bold',
-    },
-    toggle: {
-        padding:'10% 0px',
-        margin:'0',
-    }
+  card: {
+      width: '30%',
+      display: 'flex',
+      justifyContent: 'flex-start',
+  },
+  cardHeader: {
+    display:'flex',
+    justifyContent: 'center',
+    alignContent:'center', 
+  },
+  title: {
+      lineHeight:'300%',
+      fontSize: '18px',
+      fontWeight: 'bold',
+  },
+  toggle: {
+    display:'inline-block',
+    marginLeft:'10vw',
+  }
 }
 export default class FeatureCard extends React.Component {
 
@@ -58,12 +63,10 @@ export default class FeatureCard extends React.Component {
         expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
         <CardHeader
             style={styles.cardHeader}
-            titleStyle={styles.title}
-            title={this.props.title}
-            subtitle={this.props.subtitle}
             actAsExpander={true}
             showExpandableButton={false}
         >
+        <div  className={`icon ${this.props.class}`}></div>
         <Toggle
             style={styles.toggle}
             toggled={this.state.expanded}
@@ -72,7 +75,8 @@ export default class FeatureCard extends React.Component {
 
         </CardHeader>
         <CardText expandable={true}>
-            So this is cool. 
+            <div style={styles.title}>{this.props.title}</div>
+            <div style={styles.subtitle}>{this.props.subtitle}</div>
         </CardText>
       </Card>
     </MuiThemeProvider>

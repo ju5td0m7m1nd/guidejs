@@ -10,10 +10,7 @@ export default class Section extends React.Component {
         super(props);
     }
     render() {
-        // assign a justify attribute.
-        const style = Object.assign({}, styles.section, {justifyContent: this.props.justify,
-                                    height: this.props.height,
-                                    width: this.props.width}); 
+        const style = Object.assign({}, styles.section, this.props.style); 
         return  <div style = {style}>
                     {this.props.children}
                 </div>

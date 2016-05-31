@@ -7,14 +7,27 @@ export default class Container extends React.Component {
         super(props);        
     }
     render () {
+        const mainStyle = {
+          height:'100%',
+          width:'100%',
+          justifyContent: 'center',
+          background:'#EEE',
+        }
+        const featureStyle = {
+          justifyContent:'space-around',
+          alignItems: 'flex-start',
+          paddingTop: '10%',
+          height:'80%',
+          width:'100%',
+        }
         return  <div style={{height:'100%', width:'100%'}}>
-                    <Section justify='center' height='100%' width='100%'>
+                    <Section style={mainStyle}>
                         <MainView/>
                     </Section>
-                    <Section justify='space-around' height='50%' width='100%'>
-                        <FeatureCard title='CUSTOMIZED' subtitle='Train your own guide.'/>
-                        <FeatureCard title='EVERYTHING AWAKE' subtitle='Every component have the chance to show up themselves.'/>
-                        <FeatureCard title='BEST EXPERIENCE' subtitle='User will know the best way to explore your website.'/>
+                    <Section style={featureStyle}>
+                        <FeatureCard class='icon_floppy_alt' title='CUSTOMIZED' subtitle='Train your own guide.'/>
+                        <FeatureCard class='icon_clock_alt'title='SERVICE ANYTIME' subtitle='No matter when does user come to your site, user can always get the service from the guide.'/>
+                        <FeatureCard class='icon_compass_alt' title='BEST EXPERIENCE' subtitle='User will experience the best way to explore your website.'/>
                     </Section>
                 </div>
     } 
