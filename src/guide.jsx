@@ -1,10 +1,12 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
-import {StartBtn, PlayBtn, EndBtn} from './button.jsx'
+import {StartBtn, PlayBtn, PauseBtn} from './button.jsx'
 const styles = {
     panel : {
+        zIndex: '999',
         position:'fixed',
         bottom:'15px',
+        height:'auto',
         right:'15px', 
         width:'auto',
         padding:'5px',
@@ -16,10 +18,12 @@ const styles = {
 export default class ControllPanel extends React.Component{
     constructor(props){
         super(props);
-        let scrollStep = [];
+        let actionLog = [];
         this.state = {
             record: false,
         }
+        this._handleScrollEvent = this._handleScrollEvent.bind(this);
+        this._handleClickEvent = this._handleClickEvent.bind(this);
         this._currentPosition = this._currentPosition.bind(this);
         this._startRecord = this._startRecord.bind(this);
         this._stopRecord = this._stopRecord.bind(this);
@@ -27,17 +31,20 @@ export default class ControllPanel extends React.Component{
         this._addMouseClickListen = this._addMouseClickListen.bind(this);
         this._removeMouseClickListen = this._removeScrollListen.bind(this);
         this._removeScrollListen = this._removeScrollListen.bind(this);
-        this._handleScrollEvent = this._handleScrollEvent.bind(this);
         this._replay = this._replay.bind(this);
     }
     componentDidMount() {
-        
+       window.addEventListener('click', this._handleClickEvent); 
+    
+    }
+    _handleClickEvent(e) {
+        console.log(e);
     }
     /* Add and Remove event listener
      *
      */
     _addScrollListen() {
-        this.scrollStep = []; 
+        this.actionLog = []; 
         window.addEventListener('scroll',this._handleScrollEvent);
     }
     _addMouseClickListen() {
@@ -52,7 +59,7 @@ export default class ControllPanel extends React.Component{
     _handleScrollEvent(){
         let currentTop = this._currentPosition(); 
         let currentTime = new Date();  
-        this.scrollStep.push([currentTop, `${currentTime.getMinutes()}:${currentTime.getSeconds()}`]);
+        this.actionLog.push({scroll: [currentTop, `${currentTime.getMinutes()}:${currentTime.getSeconds()}`]});
     }
     _currentPosition() {
         let doc = document.documentElement;
@@ -67,17 +74,23 @@ export default class ControllPanel extends React.Component{
     }
     _replay () {
         let preStepTime = `0:0`;
-        let prePosition = 0;
-        for (let key in this.scrollStep) {
-            let step = this.scrollStep[key];  
-            console.log(step[0]);
-            prePosition = step > 1 ? this.scrollStep[step-1][0] : this.scrollStep[0][0];
-            ( ()=> {
-                smoothScroll( prePosition, step[0]); 
-            })();
+        const _scrollFilter = (action) => {
+            return action.hasOwnProperty('scroll');
         }
-        // scroll to last step
-        smoothScroll (prePosition, this.scrollStep[this.scrollStep.length-1][0]);
+        console.log(this.actionLog);
+        for (let key in this.actionLog) {
+    
+            let action = this.actionLog[key];  
+            
+            if ( action.hasOwnProperty('scroll')) {
+                let prePosition = key > 1 ? this.actionLog[key-1]['scroll'][0] : 
+                                            this.actionLog.filter(_scrollFilter);
+                ( (offset, time) => {
+                    setTimeout( ()=>window.scrollTo(0, offset), time);
+                })(action['scroll'][0], key*10);
+            }
+        }
+        
     }
     render(){
         if (this.state.record) {
@@ -88,7 +101,7 @@ export default class ControllPanel extends React.Component{
             this._removeScrollListen();
             this._removeMouseClickListen();
         }
-        let recordBtn = !this.state.record ? <StartBtn handleRecord={this._startRecord}/>: <EndBtn handleRecord={this._stopRecord}/>; 
+        let recordBtn = !this.state.record ? <StartBtn handleRecord={this._startRecord}/>: <PauseBtn handleRecord={this._stopRecord}/>; 
         return  <div className="panel" style={styles.panel}>
                     {recordBtn}
                     <PlayBtn handleReplay={this._replay}/>

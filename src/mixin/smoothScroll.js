@@ -12,6 +12,8 @@ export function smoothScroll(startY, stopY) {
     var leapY = stopY > startY ? startY + step : startY - step;
     var timer = 0;
     if (stopY > startY) {
+        /*
+        console.log("scrolling");
         for ( var i=startY; i<stopY; i+=step ) {
             ( (offset)=>{
                 setTimeout( ()=>window.scrollTo(0, offset) , timer * speed);
@@ -19,9 +21,12 @@ export function smoothScroll(startY, stopY) {
             leapY += step; 
             if (leapY > stopY) leapY = stopY; 
             timer++;
-        } 
+        }*/
+        console.log(stopY);
+        ( (offset)=>{
+            setTimeout( ()=>window.scrollTo(0, offset) , 300);
+        })(stopY);
     } else {
-        console.log(leapY);
         for ( var i=startY; i>stopY; i-=step ) {
             ( (offset)=> {
                 setTimeout( ()=>window.scrollTo(0, offset), timer * speed);
