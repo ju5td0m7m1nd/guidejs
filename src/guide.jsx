@@ -94,7 +94,7 @@ export default class ControllPanel extends React.Component{
               const clickEvent = this._createSimulatedClick();
               ( (target, time, e) => {
                 setTimeout( ()=> target.dispatchEvent(e), time); 
-              })(action['click'][0], key*20 +  2 * (150+key*100) , clickEvent);
+              })(action['click'][0], 2 * (30+key*50) , clickEvent);
             }
           }
         }
