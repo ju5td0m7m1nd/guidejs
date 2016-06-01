@@ -70,23 +70,26 @@ export default class ControllPanel extends React.Component{
     _stopRecord (){
         this.setState({record: false});
     }
+
     _replay () {
-        let preStepTime = `0:0`;
+        let preStepTime = 0;
         const _scrollFilter = (action) => {
             return action.hasOwnProperty('scroll');
         }
         for (let key in this.actionLog) {
-  
           let action = this.actionLog[key];  
           
           if ( action.hasOwnProperty('scroll')) {
-            // Need to calculate time with timestamp
+           // Need to calculate time with timestamp
             // to get the real simulation of website owner behavior
+            /*
             let prePosition = key > 1 ? this.actionLog[key-1]['scroll'][0] : 
                                         this.actionLog.filter(_scrollFilter);
+            */
             ( (offset, time) => {
                 setTimeout( ()=>window.scrollTo(0, offset), time);
-            })(action['scroll'][0], key*20);
+                preStepTime = time;
+            })(action['scroll'][0], preStepTime + 20);
           }
           else if (action.hasOwnProperty('click')) {
             // Ignore start record step
@@ -94,8 +97,12 @@ export default class ControllPanel extends React.Component{
               const clickEvent = this._createSimulatedClick();
               ( (target, time, e) => {
                 setTimeout( ()=> target.dispatchEvent(e), time); 
-              })(action['click'][0], 2 * (30+key*50) , clickEvent);
+                preStepTime = time;
+              })(action['click'][0], preStepTime + (400) , clickEvent);
             }
+          }
+          else if (action.hasOwnProperty('halt')) {
+            preStepTime += 200;
           }
         }
     }
