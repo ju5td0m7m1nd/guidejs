@@ -1,15 +1,19 @@
 import React, { Component } from 'react'
-import ControlPanel from './guide.jsx'
+import ReactDom  from 'react-dom'
+import Guide from '../'
 import Container from './pageComponent/container.jsx'
 import Bar from './pageComponent/Bar.jsx'
-export default class App extends Component {
+class App extends Component {
   render() {
     return (
             <div style={{height:'100%',width:'100%'}}>
                 <Bar/>
                 <Container/>
-                <ControlPanel/>
+                <Guide/>
             </div>
     );
   }
 }
+
+
+ReactDOM.render(<App />, document.getElementById('root'));

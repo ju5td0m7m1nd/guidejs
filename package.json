@@ -2,8 +2,8 @@
   "name": "guideJs",
   "version": "1.0.0",
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
-    "dev": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=production node ./example/server.js",
+    "dev": "NODE_ENV=development node ./example/server.js",
     "lint": "eslint src"
   },
   "repository": {
@@ -12,8 +12,9 @@
   },
   "keywords": [
     "react",
-    "reactjs",
+    "reactjs"
   ],
+  "descriptions": "A guide for every website, user will never miss the awesome design any more",
   "author": "Frank Tsai",
   "devDependencies": {
     "babel-core": "^6.0.20",
@@ -29,10 +30,9 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
-    "material-ui": "^0.15.0",
-    "mysql": "^2.10.2",
-    "react": "^0.14.6",
-    "react-dom": "^0.14.6",
-    "sequelize": "^3.23.1"
+    "material-ui": "*",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-tap-event-plugin": "^1.0.0"
   }
 }

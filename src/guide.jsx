@@ -15,7 +15,7 @@ const styles = {
     },
 }
 
-export default class ControllPanel extends React.Component{
+export default class Guide extends React.Component{
     constructor(props){
         super(props);
         let actionLog = [];
