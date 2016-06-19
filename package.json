@@ -1,6 +1,6 @@
 {
   "name": "guidejs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "scripts": {
     "compile": "babel --presets es2015 -d lib/ src/",
     "prepublish": "npm run compile",
