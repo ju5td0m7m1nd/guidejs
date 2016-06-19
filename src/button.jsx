@@ -1,17 +1,20 @@
 import React from 'react'
 const styles = {
     btn: {
-        verticalAlign:'top',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        position:'fixed',
+        right:'15px', 
+        bottom:'10%',
         boxShadow:'0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)',
-        padding:'5px 10px',
         cursor:'pointer',
-        textAlign:'center',
-        fontSize:'18px',
         fontWeight:'bold',
-        display:'inline-block',
-        width:'auto',
-        height:'auto',
-        marginLeft:'5px',
+        width:'3em',
+        height:'3em',
+        borderRadius:'50%',
+        zIndex: '998',
+        transition:'all .3s ease-in',
     },
     startBtn: {
         background:'rgba(255,255,255,1)',
@@ -23,36 +26,64 @@ const styles = {
     },
     playBtn: {
         color:'rgba(0,230,0,1)',
+        background:'rgba(255,255,255,1)',
     }, 
 }
-class StartBtn extends React.Component{
+class RecordBtn extends React.Component{
     constructor(props){
         super(props);
+        this.state= {
+          openPos: '30',
+          open: false,
+          start: false,
+        }
+        this.openBtn = this.openBtn.bind(this);
+        this.startRecord = this.startRecord.bind(this);
+    }
+    openBtn () {
+      this.setState({open: !this.state.open});
+    }
+    startRecord() {
+      this.props.handleRecord();
+      this.setState({start: !this.state.start});
     }
     render() {
-        let startBtnStyle = Object.assign({},styles.btn,styles.startBtn,{'marginLeft':'0'});
-        return <div className="start-btn" onClick={this.props.handleRecord} style={startBtnStyle}><i className="fa fa-video-camera"></i></div>
+        let recordBtnStyle = Object.assign({},styles.btn,styles.startBtn);
+        recordBtnStyle = this.state.start ? Object.assign({}, recordBtnStyle, styles.PauseBtn):
+          Object.assign({}, recordBtnStyle, styles.StartBtn);
+        recordBtnStyle = this.state.open ? Object.assign({},recordBtnStyle,{'bottom':`${this.state.openPos}%`}) : 
+          recordBtnStyle;
+
+        return  <div 
+                  className="start-btn" 
+                  onClick={this.startRecord} 
+                  style={recordBtnStyle}
+                >
+                {
+                  this.state.start ? <i className="fa fa-pause"></i>:
+                  <i className="fa fa-video-camera"></i>
+                }
+                </div>
     }
 }
-
-class PauseBtn extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render() {
-        let pauseBtnStyle = Object.assign({},styles.btn,styles.endBtn,{'marginLeft':'0'});
-        return <div className="pause-btn" onClick={this.props.handleRecord} style={pauseBtnStyle}><i className="fa fa-pause"></i></div>
-    }
-}
-
 class PlayBtn extends React.Component{
     constructor(props){
         super(props);
+        this.state= {
+          openPos: '20',
+          open:false,
+        }
+        this.openBtn = this.openBtn.bind(this);
+    }
+    openBtn () {
+      this.setState({open: !this.state.open});
     }
     render() {
         let playBtnStyle = Object.assign({},styles.btn,styles.playBtn);
-        return <div className="start-btn" onClick={this.props.handleReplay} style={playBtnStyle}><i className="fa fa-play"></i></div>
+        playBtnStyle = this.state.open ? Object.assign({},playBtnStyle,{'bottom':`${this.state.openPos}%`}) : 
+          playBtnStyle;
+        return <div className="play-btn" onClick={this.props.handleReplay} style={playBtnStyle}><i className="fa fa-play"></i></div>
     }
 } 
  
-export {StartBtn, PauseBtn, PlayBtn} 
+export {RecordBtn, PlayBtn} 
