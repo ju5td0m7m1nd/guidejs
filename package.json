@@ -1,6 +1,6 @@
 {
   "name": "guidejs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "scripts": {
     "compile": "babel --optional runtime -d src/",
     "prepublish": "npm run compile",
