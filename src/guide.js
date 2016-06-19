@@ -1,6 +1,6 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
-import {RecordBtn, PlayBtn} from './button.jsx'
+import {RecordBtn, PlayBtn} from './button.js'
 const styles = {
     panel : {
         zIndex: '999',

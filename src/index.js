@@ -1,2 +1,2 @@
-import Guide from './guide.jsx';
+import Guide from './guide.js';
 export default Guide
