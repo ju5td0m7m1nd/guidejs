@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import ReactDOM  from 'react-dom'
 //import Guide from './guide.jsx'
-import Guide from '../'
-import Container from './pageComponent/container.jsx'
-import Bar from './pageComponent/Bar.jsx'
+import Guide from './'
+import Container from '../example/pageComponent/container.jsx'
+import Bar from '../example/pageComponent/Bar.jsx'
 class App extends Component {
   render() {
     return (
