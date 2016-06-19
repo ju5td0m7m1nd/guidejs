@@ -1,21 +1,27 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
-import {StartBtn, PlayBtn, PauseBtn} from './button.jsx'
+import {RecordBtn, PlayBtn, QuestionBtn} from './button.js'
 const styles = {
     panel : {
-        zIndex: '999',
+        zIndex: '9999',
         position:'fixed',
-        bottom:'15px',
-        height:'auto',
-        right:'15px', 
-        width:'auto',
-        padding:'5px',
-        background:'#FFF',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        right:'10%', 
+        bottom:'10%',
+        fontWeight:'bold',
+        color:'#FFF',
+        cursor:'pointer',
+        height:'3em',
+        width:'3em',
+        borderRadius:'50%',
+        background:'rgb(0, 188, 212)',
         boxShadow:'0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)',
     },
 }
 
-export default class ControllPanel extends React.Component{
+export default class Guide extends React.Component{
     constructor(props){
         super(props);
         let actionLog = [];
@@ -31,6 +37,7 @@ export default class ControllPanel extends React.Component{
         this._removeListen = this._removeListen.bind(this);
         this._replay = this._replay.bind(this);
         this._getCurrentTime = this._getCurrentTime.bind(this);
+        this.panelEvent = this.panelEvent.bind(this);
     }
     componentDidMount() {
     
@@ -112,6 +119,11 @@ export default class ControllPanel extends React.Component{
       e.initMouseEvent('click',true,true);
       return e
     }
+    panelEvent() {
+        this.refs.playBtn.openBtn();
+        this.refs.recordBtn.openBtn();
+        this.refs.qBtn.openBtn();
+    }
     render(){
         if (this.state.record) {
             this._addListen();
@@ -119,10 +131,15 @@ export default class ControllPanel extends React.Component{
         else {
             this._removeListen();
         }
-        let recordBtn = !this.state.record ? <StartBtn handleRecord={this._startRecord}/>: <PauseBtn handleRecord={this._stopRecord}/>; 
-        return  <div className="panel" style={styles.panel}>
-                    {recordBtn}
-                    <PlayBtn handleReplay={this._replay}/>
+        let recordBtn = !this.state.record ? <RecordBtn ref="recordBtn" handleRecord={this._startRecord}/>: <RecordBtn ref="recordBtn" handleRecord={this._stopRecord}/>; 
+
+        return  <div>
+                  <div className="panel" onClick={this.panelEvent} style={styles.panel}>
+                  G    
+                  </div>
+                  {recordBtn}
+                  <PlayBtn ref="playBtn" handleReplay={this._replay}/>
+                  <QuestionBtn ref="qBtn" />
                 </div>
     }
 }
