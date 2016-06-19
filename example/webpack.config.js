@@ -19,8 +19,9 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js$|\.jsx$/,
+      exclude: /node_modules/,
       loaders: ['react-hot', 'babel'],
-      include: path.join(__dirname,'..', 'src')
+      include: [path.join(__dirname,'..')]
     }]
   },
   query: {
