@@ -2,10 +2,13 @@
   "name": "guidejs",
   "version": "1.0.5",
   "scripts": {
+    "compile": "babel --optional runtime -d src/,
+    "prepublish": "npm run compile",
     "start": "NODE_ENV=production node ./example/server.js",
     "dev": "NODE_ENV=development node ./example/server.js",
     "lint": "eslint src"
   },
+  "main": "./index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/ju5td0m7m1nd/guidejs.git"

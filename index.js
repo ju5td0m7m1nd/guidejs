@@ -1,2 +1,2 @@
-import GuideJs from './src/guide.jsx';
-export default GuideJs
+import Guide from './dist/bundle.js';
+export default Guide
