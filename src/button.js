@@ -1,11 +1,15 @@
 import React from 'react'
+import PlayFont from 'react-icons/lib/fa/play-circle-o'
+import StopFont from 'react-icons/lib/fa/pause'
+import ReactFont from 'react-icons/lib/fa/video-camera'
+import QuestionFont from 'react-icons/lib/fa/question'
 const styles = {
     btn: {
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
         position:'fixed',
-        right:'15px', 
+        right:'10%', 
         bottom:'10%',
         boxShadow:'0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)',
         cursor:'pointer',
@@ -13,7 +17,7 @@ const styles = {
         width:'3em',
         height:'3em',
         borderRadius:'50%',
-        zIndex: '998',
+        zIndex: '9998',
         transition:'all .3s ease-in',
     },
     startBtn: {
@@ -23,6 +27,10 @@ const styles = {
     endBtn: {
         background:'rgba(230,0,0,1)',
         color:'#FFF',
+    },
+    qBtn: {
+      background:'rgba(255,255,255,1)',
+      color:'#222',
     },
     playBtn: {
         color:'rgba(0,230,0,1)',
@@ -60,8 +68,8 @@ class RecordBtn extends React.Component{
                   style={recordBtnStyle}
                 >
                 {
-                  this.state.start ? <i className="fa fa-pause"></i>:
-                  <i className="fa fa-video-camera"></i>
+                  this.state.start ? <StopFont height="1.5em" width="1.5em" />:
+                  <ReactFont height="1.5em" width="1.5em" />
                 }
                 </div>
     }
@@ -82,8 +90,33 @@ class PlayBtn extends React.Component{
         let playBtnStyle = Object.assign({},styles.btn,styles.playBtn);
         playBtnStyle = this.state.open ? Object.assign({},playBtnStyle,{'bottom':`${this.state.openPos}%`}) : 
           playBtnStyle;
-        return <div className="play-btn" onClick={this.props.handleReplay} style={playBtnStyle}><i className="fa fa-play"></i></div>
+        return  <div className="play-btn" onClick={this.props.handleReplay} style={playBtnStyle}>
+                  <PlayFont height="2em" width="2em"/></div>
     }
 } 
- 
-export {RecordBtn, PlayBtn} 
+
+class QuestionBtn extends React.Component{
+    constructor(props){
+        super(props);
+        this.state= {
+          openPos: '20',
+          open:false,
+        }
+        this.openBtn = this.openBtn.bind(this);
+        this.visitGuideJs = this.visitGuideJs.bind(this);
+    }
+    openBtn () {
+      this.setState({open: !this.state.open});
+    }
+    visitGuideJs() {
+      window.open("http://www.ju5td0m7m1nd.com:4000");
+    }
+    render() {
+        let qBtnStyle = Object.assign({},styles.btn,styles.qBtn);
+        qBtnStyle = this.state.open ? Object.assign({},qBtnStyle,{'right':`${this.state.openPos}%`}) : 
+          qBtnStyle;
+        return  <div className="question-btn" onClick={this.visitGuideJs} style={qBtnStyle}>
+                  <QuestionFont height="2em" width="2em"/></div>
+    }
+}
+export {RecordBtn, PlayBtn, QuestionBtn} 

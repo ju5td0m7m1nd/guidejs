@@ -1,14 +1,14 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
-import {RecordBtn, PlayBtn} from './button.js'
+import {RecordBtn, PlayBtn, QuestionBtn} from './button.js'
 const styles = {
     panel : {
-        zIndex: '999',
+        zIndex: '9999',
         position:'fixed',
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
-        right:'15px', 
+        right:'10%', 
         bottom:'10%',
         fontWeight:'bold',
         color:'#FFF',
@@ -120,8 +120,9 @@ export default class Guide extends React.Component{
       return e
     }
     panelEvent() {
-        this.refs.playbtn.openBtn();
+        this.refs.playBtn.openBtn();
         this.refs.recordBtn.openBtn();
+        this.refs.qBtn.openBtn();
     }
     render(){
         if (this.state.record) {
@@ -137,7 +138,8 @@ export default class Guide extends React.Component{
                   G    
                   </div>
                   {recordBtn}
-                  <PlayBtn ref="playbtn" handleReplay={this._replay}/>
+                  <PlayBtn ref="playBtn" handleReplay={this._replay}/>
+                  <QuestionBtn ref="qBtn" />
                 </div>
     }
 }
