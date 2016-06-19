@@ -1,5 +1,5 @@
 {
-  "name": "guidejs",
+  "name": "guideJs",
   "version": "1.0.2",
   "scripts": {
     "start": "NODE_ENV=production node ./example/server.js",
