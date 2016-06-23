@@ -30,6 +30,9 @@ export default class Guide extends React.Component{
         }
         this._handleScrollEvent = this._handleScrollEvent.bind(this);
         this._handleClickEvent = this._handleClickEvent.bind(this);
+        this._handleMouseDown = this._handleMouseDown.bind(this);
+        this._handleMouseMove = this._handleMouseMove.bind(this);
+        this._handleMouseUp = this._handleMouseUp.bind(this);
         this._currentPosition = this._currentPosition.bind(this);
         this._startRecord = this._startRecord.bind(this);
         this._stopRecord = this._stopRecord.bind(this);
@@ -38,6 +41,7 @@ export default class Guide extends React.Component{
         this._replay = this._replay.bind(this);
         this._getCurrentTime = this._getCurrentTime.bind(this);
         this.panelEvent = this.panelEvent.bind(this);
+        this._createSimulatedMouseEvent = this._createSimulatedMouseEvent.bind(this);
     }
     componentDidMount() {
     
@@ -46,8 +50,31 @@ export default class Guide extends React.Component{
       let currentTime = new Date();
       return `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
     } 
+    /*  Handle event put here ! 
+        actionLog[event].push([param1, param2, param3 ])
+        event: type of action
+        param1: target
+        param2: time
+        param3: additional info
+    */
+     
+    _handleScrollEvent(){
+        let currentTop = this._currentPosition(); 
+        let currentTime = new Date();  
+        this.actionLog.push({scroll: [currentTop, this._getCurrentTime()]});
+    }
     _handleClickEvent(e) {
       this.actionLog.push({click: [e.target, this._getCurrentTime()]}); 
+    }
+    _handleMouseDown(e) {
+      this.actionLog.push({mousedown: [e.target, this._getCurrentTime()]});
+    }
+    _handleMouseMove(e) {
+      this.actionLog.push({mousemove: [e.target, this._getCurrentTime(), 
+        {cx: e.clientX, cy:e.clientY, sx:e.screenX, sy:e.screenY}]});
+    }
+    _handleMouseUp(e) {
+      this.actionLog.push({mouseup: [e.target, this._getCurrentTime()]});
     }
     /* Add and Remove event listener
      *
@@ -56,16 +83,18 @@ export default class Guide extends React.Component{
         this.actionLog = []; 
         window.addEventListener('click', this._handleClickEvent); 
         window.addEventListener('scroll',this._handleScrollEvent);
+        window.addEventListener('mousedown',this._handleMouseDown);
+        window.addEventListener('mousemove',this._handleMouseMove);
+        window.addEventListener('mouseup',this._handleMouseUp);
     }
     _removeListen() {
         window.removeEventListener('click', this._handleClickEvent);
         window.removeEventListener('scroll',this._handleScrollEvent);
+        window.removeEventListener('mousedown', this._handleMouseDown);
+        window.removeEventListener('mousemove',this._handleMouseMove);
+        window.removeEventListener('mouseup',this._handleMouseUp);
     }
-    _handleScrollEvent(){
-        let currentTop = this._currentPosition(); 
-        let currentTime = new Date();  
-        this.actionLog.push({scroll: [currentTop, this._getCurrentTime()]});
-    }
+   
     _currentPosition() {
         let doc = document.documentElement;
         let top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
@@ -87,12 +116,7 @@ export default class Guide extends React.Component{
           let action = this.actionLog[key];  
           
           if ( action.hasOwnProperty('scroll')) {
-           // Need to calculate time with timestamp
-            // to get the real simulation of website owner behavior
-            /*
-            let prePosition = key > 1 ? this.actionLog[key-1]['scroll'][0] : 
-                                        this.actionLog.filter(_scrollFilter);
-            */
+           
             ( (offset, time) => {
                 setTimeout( ()=>window.scrollTo(0, offset), time);
                 preStepTime = time;
@@ -101,22 +125,48 @@ export default class Guide extends React.Component{
           else if (action.hasOwnProperty('click')) {
             // Ignore start record step
             if (key != 0 ) {
-              const clickEvent = this._createSimulatedClick();
+              const clickEvent = this._createSimulatedMouseEvent('click');
               ( (target, time, e) => {
                 setTimeout( ()=> target.dispatchEvent(e), time); 
                 preStepTime = time;
-              })(action['click'][0], preStepTime + (400) , clickEvent);
+              })(action['click'][0], preStepTime + 400 , clickEvent);
             }
+          }
+          else if (action.hasOwnProperty('mousedown')) {
+            ((target, time, e) => {
+              setTimeout( ()=> target.dispatchEvent(e), time);
+              preStepTime = time;
+            })(action['mousedown'][0], preStepTime + 10, this._createSimulatedMouseEvent('mousedown'));
+          } else if (action.hasOwnProperty('mouseup')) {
+            ((target, time, e) => {
+              setTimeout( ()=> target.dispatchEvent(e), time);
+              preStepTime = time;
+            })(action['mouseup'][0], preStepTime + 10, this._createSimulatedMouseEvent('mouseup'));
+          }
+          else if (action.hasOwnProperty('mousemove')) {
+            const additionalInfo = action['mousemove'][2];
+            ((target, time, e) => {
+              setTimeout( ()=> target.dispatchEvent(e), time);
+              preStepTime = time;
+            })(action['mousemove'][0], preStepTime + 10, this._createSimulatedMouseEvent('mousemove',additionalInfo)); 
           }
           else if (action.hasOwnProperty('halt')) {
             preStepTime += 200;
           }
         }
     }
-
-    _createSimulatedClick() {
+    /* addition info will not null, if mouse event need extra info */
+    _createSimulatedMouseEvent(action, info) {
       const e = document.createEvent('MouseEvent');
-      e.initMouseEvent('click',true,true);
+      if (action === 'click') {
+        e.initMouseEvent('click',true,true);
+      } else if ( action === 'mousedown' ) {
+        e.initMouseEvent('mousedown',true,true);
+      } else if (action === 'mousemove') {
+        e.initMouseEvent('mousemove',true,true,document.defaultView,0,info.sx,info.sy,info.cx,info.cy,false,false,false,false,0,null);
+      } else if (action === 'mouseup') {
+        e.initMouseEvent('mouseup', true,true);
+      }
       return e
     }
     panelEvent() {

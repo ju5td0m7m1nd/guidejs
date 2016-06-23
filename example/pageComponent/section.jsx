@@ -1,8 +1,7 @@
 import React from 'react'
 const styles = {
     section : {
-        display:'flex',
-        alignItems: 'center',
+
     }
 }
 export default class Section extends React.Component {
