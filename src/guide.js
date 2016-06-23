@@ -30,6 +30,8 @@ export default class Guide extends React.Component{
         }
         this._handleScrollEvent = this._handleScrollEvent.bind(this);
         this._handleClickEvent = this._handleClickEvent.bind(this);
+        this._handleMouseDown = this._handleMouseDown.bind(this);
+        this._handleMouseMove = this._handleMouseMove.bind(this);
         this._currentPosition = this._currentPosition.bind(this);
         this._startRecord = this._startRecord.bind(this);
         this._stopRecord = this._stopRecord.bind(this);
@@ -49,6 +51,12 @@ export default class Guide extends React.Component{
     _handleClickEvent(e) {
       this.actionLog.push({click: [e.target, this._getCurrentTime()]}); 
     }
+    _handleMouseDown(e) {
+      console.log(e);
+    }
+    _handleMouseMove(e) {
+      console.log(`Mouse Move! \n ${e}`);
+    }
     /* Add and Remove event listener
      *
      */
@@ -56,6 +64,9 @@ export default class Guide extends React.Component{
         this.actionLog = []; 
         window.addEventListener('click', this._handleClickEvent); 
         window.addEventListener('scroll',this._handleScrollEvent);
+        window.addEventListener('mousedown',this._handleMouseDown);
+        // maybe we should only listen on move after mousedown
+        window.addEventListener('mousemove',this._handleMouseMove);
     }
     _removeListen() {
         window.removeEventListener('click', this._handleClickEvent);
