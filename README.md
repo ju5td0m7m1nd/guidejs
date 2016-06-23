@@ -1,6 +1,6 @@
 #GuideJs
-*Set up a customed guide for your website,  
-Let it help the visitor have the best experience flow when traveling the website!*
+Set up a customed guide for your website,  
+Let it help the visitor have the best experience flow when traveling the website!
 
 ##What is this
 A React Component which enable developer  
