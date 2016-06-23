@@ -41,7 +41,7 @@ class RecordBtn extends React.Component{
     constructor(props){
         super(props);
         this.state= {
-          openPos: '30',
+          openPos: '20',
           open: false,
           start: false,
         }
@@ -59,7 +59,7 @@ class RecordBtn extends React.Component{
         let recordBtnStyle = Object.assign({},styles.btn,styles.startBtn);
         recordBtnStyle = this.state.start ? Object.assign({}, recordBtnStyle, styles.PauseBtn):
           Object.assign({}, recordBtnStyle, styles.StartBtn);
-        recordBtnStyle = this.state.open ? Object.assign({},recordBtnStyle,{'bottom':`${this.state.openPos}%`}) : 
+        recordBtnStyle = this.state.open ? Object.assign({},recordBtnStyle,{'right':`${this.state.openPos}%`}) : 
           recordBtnStyle;
 
         return  <div 
@@ -78,7 +78,7 @@ class PlayBtn extends React.Component{
     constructor(props){
         super(props);
         this.state= {
-          openPos: '20',
+          openPos: '15',
           open:false,
         }
         this.openBtn = this.openBtn.bind(this);
@@ -88,7 +88,7 @@ class PlayBtn extends React.Component{
     }
     render() {
         let playBtnStyle = Object.assign({},styles.btn,styles.playBtn);
-        playBtnStyle = this.state.open ? Object.assign({},playBtnStyle,{'bottom':`${this.state.openPos}%`}) : 
+        playBtnStyle = this.state.open ? Object.assign({},playBtnStyle,{'right':`${this.state.openPos}%`}) : 
           playBtnStyle;
         return  <div className="play-btn" onClick={this.props.handleReplay} style={playBtnStyle}>
                   <PlayFont height="2em" width="2em"/></div>
@@ -99,7 +99,7 @@ class QuestionBtn extends React.Component{
     constructor(props){
         super(props);
         this.state= {
-          openPos: '20',
+          openPos: '25',
           open:false,
         }
         this.openBtn = this.openBtn.bind(this);
