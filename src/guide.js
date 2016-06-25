@@ -1,6 +1,7 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
 import {RecordBtn, PlayBtn, QuestionBtn} from './button.js'
+import {toJSON, toDOM} from './mixin/dom2json.js'
 const styles = {
     panel : {
         zIndex: '9999',
@@ -42,9 +43,19 @@ export default class Guide extends React.Component{
         this._getCurrentTime = this._getCurrentTime.bind(this);
         this.panelEvent = this.panelEvent.bind(this);
         this._createSimulatedMouseEvent = this._createSimulatedMouseEvent.bind(this);
+        this._XMLReq = this._XMLReq.bind(this);
     }
     componentDidMount() {
-    
+      /*
+      if (this.props.mode !== 'dev') {
+        // Read actionLog from JSON
+        this._XMLReq('GET', '/guide.json').then((res) => {
+          this.setState({actionLog: JSON.parse(res)});
+        }).catch((err) => {
+          console.log(err);
+        });        
+      } 
+      */ 
     }
     _getCurrentTime() {
       let currentTime = new Date();
@@ -64,17 +75,22 @@ export default class Guide extends React.Component{
         this.actionLog.push({scroll: [currentTop, this._getCurrentTime()]});
     }
     _handleClickEvent(e) {
+      const target = toJSON(e.target);
+      console.log(target);
       this.actionLog.push({click: [e.target, this._getCurrentTime()]}); 
     }
     _handleMouseDown(e) {
-      this.actionLog.push({mousedown: [e.target, this._getCurrentTime()]});
+      const target = toJSON(e.target);
+      this.actionLog.push({mousedown: [target, this._getCurrentTime()]});
     }
     _handleMouseMove(e) {
-      this.actionLog.push({mousemove: [e.target, this._getCurrentTime(), 
+      const target = toJSON(e.target);
+      this.actionLog.push({mousemove: [target, this._getCurrentTime(), 
         {cx: e.clientX, cy:e.clientY, sx:e.screenX, sy:e.screenY}]});
     }
     _handleMouseUp(e) {
-      this.actionLog.push({mouseup: [e.target, this._getCurrentTime()]});
+      const target = toJSON(e.target);
+      this.actionLog.push({mouseup: [target, this._getCurrentTime()]});
     }
     /* Add and Remove event listener
      *
@@ -105,8 +121,34 @@ export default class Guide extends React.Component{
     }
     _stopRecord (){
         this.setState({record: false});
+        /*
+        this._XMLReq('POST','/api/guide/').then( (res) => {
+          console.log("SUCCESS");
+        }).catch((err) => console.log(err));;     
+        */
     }
-
+    _XMLReq(method, url) {
+      return new Promise( (res, rej) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+          if (this.state >= 200 && this.statue < 300 ) {
+            res(xhr.response);
+          } else {
+            rej({
+              status: this.status,
+              statusText: xhr.statusText
+            });
+          };
+        };
+        if(method === 'POST') {
+          xhr.send(JSON.stringify(this.actionLog));
+        } else {
+          xhr.send();
+        }
+      });
+    }
     _replay () {
         let preStepTime = 0;
         const _scrollFilter = (action) => {
@@ -114,9 +156,8 @@ export default class Guide extends React.Component{
         }
         for (let key in this.actionLog) {
           let action = this.actionLog[key];  
-          
+          /* turn action target back to DOM */ 
           if ( action.hasOwnProperty('scroll')) {
-           
             ( (offset, time) => {
                 setTimeout( ()=>window.scrollTo(0, offset), time);
                 preStepTime = time;
@@ -171,7 +212,9 @@ export default class Guide extends React.Component{
     }
     panelEvent() {
         this.refs.playBtn.openBtn();
-        this.refs.recordBtn.openBtn();
+        if ( this.props.mode === 'dev' ) {
+          this.refs.recordBtn.openBtn();
+        }
         this.refs.qBtn.openBtn();
     }
     render(){
@@ -187,9 +230,9 @@ export default class Guide extends React.Component{
                   <div className="panel" onClick={this.panelEvent} style={styles.panel}>
                   G    
                   </div>
-                  {recordBtn}
+                  { this.props.mode === 'dev' ? recordBtn : ''}
                   <PlayBtn ref="playBtn" handleReplay={this._replay}/>
-                  <QuestionBtn ref="qBtn" />
+                  <QuestionBtn ref="qBtn" {...this.props} />
                 </div>
     }
 }

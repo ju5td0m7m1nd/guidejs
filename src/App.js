@@ -10,7 +10,7 @@ class App extends Component {
             <div style={{height:'100%',width:'100%'}}>
                 <Bar/>
                 <Container/>
-                <Guide/>
+                <Guide mode="dev"/>
             </div>
     );
   }

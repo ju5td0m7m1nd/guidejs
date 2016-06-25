@@ -34,6 +34,7 @@
     "webpack-dev-server": "^1.12.1"
   },
   "dependencies": {
+    "domjson": "^0.1.2",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-icons": "^2.1.0",

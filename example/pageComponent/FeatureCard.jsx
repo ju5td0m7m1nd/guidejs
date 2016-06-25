@@ -68,11 +68,11 @@ export default class FeatureCard extends React.Component {
         >
         <div  className={`icon ${this.props.class}`}></div>
         <Toggle
+            className="feature-input"
             style={styles.toggle}
             toggled={this.state.expanded}
             onToggle={this.handleToggle}
           />
-
         </CardHeader>
         <CardText expandable={true}>
             <div style={styles.title}>{this.props.title}</div>
