@@ -1,6 +1,7 @@
 import React from 'react'
 import {smoothScroll} from './mixin/smoothScroll' 
 import {RecordBtn, PlayBtn, QuestionBtn} from './button.js'
+import {toJSON, toDOM} from './mixin/dom2json.js'
 const styles = {
     panel : {
         zIndex: '9999',
@@ -42,9 +43,27 @@ export default class Guide extends React.Component{
         this._getCurrentTime = this._getCurrentTime.bind(this);
         this.panelEvent = this.panelEvent.bind(this);
         this._createSimulatedMouseEvent = this._createSimulatedMouseEvent.bind(this);
+        this._XMLReq = this._XMLReq.bind(this);
     }
     componentDidMount() {
-    
+      if (this.props.mode !== 'dev') {
+        // Read actionLog from JSON
+        this._XMLReq('GET','/api/guide').then((res) => {
+          console.log(res);
+          this.actionLog = JSON.parse(res);
+        }).then((err) => {
+          //console.log("FAILED TO READ");
+        });        
+      } 
+      const all = document.body.getElementsByTagName("*");
+      Object.keys(all).map((item, key) => {
+        try {
+          const classString = all[item].className || "";
+          const newClass = classString.concat(` guidetag-${item}ytuswbu`);
+          all[item].className = newClass;
+        } catch(err) {
+        }
+      });
     }
     _getCurrentTime() {
       let currentTime = new Date();
@@ -64,17 +83,21 @@ export default class Guide extends React.Component{
         this.actionLog.push({scroll: [currentTop, this._getCurrentTime()]});
     }
     _handleClickEvent(e) {
-      this.actionLog.push({click: [e.target, this._getCurrentTime()]}); 
+      const target = e.target.className.split('guidetag-')[1].split('ytuswbu')[0];
+      this.actionLog.push({click: [target, this._getCurrentTime()]}); 
     }
     _handleMouseDown(e) {
-      this.actionLog.push({mousedown: [e.target, this._getCurrentTime()]});
+      const target = e.target.className.split('guidetag-')[1].split('ytuswbu')[0];
+      this.actionLog.push({mousedown: [target, this._getCurrentTime()]});
     }
     _handleMouseMove(e) {
-      this.actionLog.push({mousemove: [e.target, this._getCurrentTime(), 
+      const target = e.target.className.split('guidetag-')[1].split('ytuswbu')[0];
+      this.actionLog.push({mousemove: [target, this._getCurrentTime(), 
         {cx: e.clientX, cy:e.clientY, sx:e.screenX, sy:e.screenY}]});
     }
     _handleMouseUp(e) {
-      this.actionLog.push({mouseup: [e.target, this._getCurrentTime()]});
+      const target = e.target.className.split('guidetag-')[1].split('ytuswbu')[0];
+      this.actionLog.push({mouseup: [target, this._getCurrentTime()]});
     }
     /* Add and Remove event listener
      *
@@ -105,18 +128,55 @@ export default class Guide extends React.Component{
     }
     _stopRecord (){
         this.setState({record: false});
+        this._XMLReq('POST','/api/guide/').then( (res) => {
+          console.log("SUCCESS");
+        }).catch((err) => console.log(err));;     
     }
-
+    _XMLReq(method, url) {
+      return new Promise( (res, rej) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        if(method === 'POST') {
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.onload = function() {
+            if (this.state >= 200 && this.state < 300 ) {
+              console.log("XHR fetch");
+              res(xhr.responseText);
+            } else {
+              console.log("XHR failed");
+              rej({
+                status: this.status,
+                statusText: xhr.statusText
+              });
+            };
+          };
+        }
+        else {
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == XMLHttpRequest.DONE) {
+                  res(xhr.responseText);
+              }
+          }
+        } 
+        if(method === 'POST') {
+          xhr.send(JSON.stringify(this.actionLog));
+        } else {
+          xhr.send();
+        }
+      });
+    }
     _replay () {
+        console.log(this.actionLog);
         let preStepTime = 0;
         const _scrollFilter = (action) => {
             return action.hasOwnProperty('scroll');
         }
         for (let key in this.actionLog) {
           let action = this.actionLog[key];  
-          
+          /* turn action target back to DOM */ 
+          const tagNum = action[Object.keys(action)[0]][0]; 
+          const targetDOM = document.getElementsByClassName(`guidetag-${tagNum}ytuswbu`)[0];
           if ( action.hasOwnProperty('scroll')) {
-           
             ( (offset, time) => {
                 setTimeout( ()=>window.scrollTo(0, offset), time);
                 preStepTime = time;
@@ -129,26 +189,26 @@ export default class Guide extends React.Component{
               ( (target, time, e) => {
                 setTimeout( ()=> target.dispatchEvent(e), time); 
                 preStepTime = time;
-              })(action['click'][0], preStepTime + 400 , clickEvent);
+              })(targetDOM, preStepTime + 400 , clickEvent);
             }
           }
           else if (action.hasOwnProperty('mousedown')) {
             ((target, time, e) => {
               setTimeout( ()=> target.dispatchEvent(e), time);
               preStepTime = time;
-            })(action['mousedown'][0], preStepTime + 10, this._createSimulatedMouseEvent('mousedown'));
+            })(targetDOM, preStepTime + 10, this._createSimulatedMouseEvent('mousedown'));
           } else if (action.hasOwnProperty('mouseup')) {
             ((target, time, e) => {
               setTimeout( ()=> target.dispatchEvent(e), time);
               preStepTime = time;
-            })(action['mouseup'][0], preStepTime + 10, this._createSimulatedMouseEvent('mouseup'));
+            })(targetDOM, preStepTime + 10, this._createSimulatedMouseEvent('mouseup'));
           }
           else if (action.hasOwnProperty('mousemove')) {
             const additionalInfo = action['mousemove'][2];
             ((target, time, e) => {
               setTimeout( ()=> target.dispatchEvent(e), time);
               preStepTime = time;
-            })(action['mousemove'][0], preStepTime + 10, this._createSimulatedMouseEvent('mousemove',additionalInfo)); 
+            })(targetDOM, preStepTime + 10, this._createSimulatedMouseEvent('mousemove',additionalInfo)); 
           }
           else if (action.hasOwnProperty('halt')) {
             preStepTime += 200;
@@ -171,7 +231,9 @@ export default class Guide extends React.Component{
     }
     panelEvent() {
         this.refs.playBtn.openBtn();
-        this.refs.recordBtn.openBtn();
+        if ( this.props.mode === 'dev' ) {
+          this.refs.recordBtn.openBtn();
+        }
         this.refs.qBtn.openBtn();
     }
     render(){
@@ -181,7 +243,7 @@ export default class Guide extends React.Component{
         else {
             this._removeListen();
         }
-        let recordBtn = !this.state.record ? <RecordBtn ref="recordBtn" handleRecord={this._startRecord}/>: <RecordBtn ref="recordBtn" handleRecord={this._stopRecord}/>; 
+        let recordBtn = !this.state.record ? <RecordBtn {...this.props} ref="recordBtn" handleRecord={this._startRecord}/>: <RecordBtn {...this.props} ref="recordBtn" handleRecord={this._stopRecord}/>; 
 
         return  <div>
                   <div className="panel" onClick={this.panelEvent} style={styles.panel}>
@@ -189,7 +251,7 @@ export default class Guide extends React.Component{
                   </div>
                   {recordBtn}
                   <PlayBtn ref="playBtn" handleReplay={this._replay}/>
-                  <QuestionBtn ref="qBtn" />
+                  <QuestionBtn ref="qBtn" {...this.props} />
                 </div>
     }
 }

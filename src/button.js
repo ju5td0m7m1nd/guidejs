@@ -61,6 +61,9 @@ class RecordBtn extends React.Component{
           Object.assign({}, recordBtnStyle, styles.StartBtn);
         recordBtnStyle = this.state.open ? Object.assign({},recordBtnStyle,{'right':`${this.state.openPos}%`}) : 
           recordBtnStyle;
+        console.log(this.props.mode);
+        recordBtnStyle = this.props.mode !== 'dev' ? Object.assign({},recordBtnStyle,{'visibility':'hidden'}):
+          recordBtnStyle;
 
         return  <div 
                   className="start-btn" 
@@ -99,7 +102,7 @@ class QuestionBtn extends React.Component{
     constructor(props){
         super(props);
         this.state= {
-          openPos: '25',
+          openPos: this.props.mode === 'dev' ? 25 : 20,
           open:false,
         }
         this.openBtn = this.openBtn.bind(this);
@@ -109,7 +112,7 @@ class QuestionBtn extends React.Component{
       this.setState({open: !this.state.open});
     }
     visitGuideJs() {
-      window.open("http://www.ju5td0m7m1nd.com:4000");
+      window.open("https://www.npmjs.com/package/guidejs");
     }
     render() {
         let qBtnStyle = Object.assign({},styles.btn,styles.qBtn);
