@@ -61,6 +61,9 @@ class RecordBtn extends React.Component{
           Object.assign({}, recordBtnStyle, styles.StartBtn);
         recordBtnStyle = this.state.open ? Object.assign({},recordBtnStyle,{'right':`${this.state.openPos}%`}) : 
           recordBtnStyle;
+        console.log(this.props.mode);
+        recordBtnStyle = this.props.mode !== 'dev' ? Object.assign({},recordBtnStyle,{'visibility':'hidden'}):
+          recordBtnStyle;
 
         return  <div 
                   className="start-btn" 
